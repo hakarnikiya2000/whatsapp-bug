@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>GOD OF SERVER | WhatsApp Bug Simulator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(145deg, #0a0f1e 0%, #0c1222 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    /* main card container */
+    .god-card {
+      max-width: 620px;
+      width: 100%;
+      background: rgba(18, 25, 45, 0.85);
+      backdrop-filter: blur(2px);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      transition: transform 0.2s ease;
+      border: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    .god-card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 30px 55px rgba(0, 0, 0, 0.6);
+    }
+
+    /* header area with glow */
+    .header {
+      background: linear-gradient(135deg, #000000cc, #0b0e1acc);
+      padding: 1.5rem 1.8rem;
+      text-align: center;
+      border-bottom: 2px solid #f5b042;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #FFD966, #FFA41F);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      word-break: keep-all;
+    }
+
+    .header::after {
+      content: "⚡ SERVER CORE ⚡";
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: #ffb347;
+      margin-top: 6px;
+      opacity: 0.8;
+    }
+
+    /* content padding */
+    .content {
+      padding: 2rem 1.8rem 1.8rem;
+    }
+
+    /* input group */
+    .input-group {
+      margin-bottom: 1.8rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      color: #cdd9ff;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: #0f1422;
+      border: 1.5px solid #2a3455;
+      border-radius: 2rem;
+      padding: 0.9rem 1.4rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #f0f3ff;
+      transition: all 0.25s;
+      outline: none;
+    }
+
+    .input-group input:focus {
+      border-color: #f5b042;
+      box-shadow: 0 0 0 3px rgba(245, 176, 66, 0.25);
+      background: #11172b;
+    }
+
+    /* button styling */
+    .bug-button {
+      width: 100%;
+      background: linear-gradient(95deg, #d93f21, #b12a0f);
+      border: none;
+      padding: 1rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 3rem;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 8px 18px rgba(185, 45, 20, 0.4);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .bug-button:hover {
+      background: linear-gradient(95deg, #f14d2e, #c83214);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(220, 60, 20, 0.5);
+    }
+
+    .bug-button:active {
+      transform: translateY(2px);
+    }
+
+    /* messages container - simulation log */
+    .bug-log {
+      margin-top: 2rem;
+      background: #070b14a8;
+      border-radius: 1.8rem;
+      padding: 1rem 0.2rem 0.8rem 0.2rem;
+      backdrop-filter: blur(4px);
+      border: 1px solid #2a2f42;
+    }
+
+    .log-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0 1.2rem 0.8rem 1.2rem;
+      border-bottom: 1px dashed #ffb34740;
+      margin-bottom: 0.8rem;
+    }
+
+    .log-title span:first-child {
+      font-weight: 700;
+      color: #ffbc6e;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .log-title span:last-child {
+      font-size: 0.7rem;
+      color: #7f8aa8;
+      cursor: pointer;
+      background: #1e243b;
+      padding: 4px 10px;
+      border-radius: 30px;
+      transition: 0.2s;
+    }
+
+    .log-title span:last-child:hover {
+      background: #2e3857;
+      color: #ffd9a5;
+    }
+
+    .messages-area {
+      max-height: 340px;
+      overflow-y: auto;
+      padding: 0.2rem 0.8rem 0.6rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* each bug message style with animations */
+    .bug-msg {
+      background: linear-gradient(120deg, #1e1f2e, #151b2b);
+      border-left: 5px solid #ff5e3a;
+      padding: 0.7rem 1rem;
+      border-radius: 1rem;
+      font-family: 'Courier New', 'Fira Code', monospace;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #fbc490;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transform-origin: left;
+      animation: popIn 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+      transition: 0.1s;
+      word-break: break-word;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bug-msg::before {
+      content: "⚠️";
+      font-size: 1.1rem;
+      filter: drop-shadow(0 0 2px #ff884d);
+    }
+
+    /* different icons for variation based on index, but consistent style */
+    .bug-msg:nth-child(odd)::before {
+      content: "📱💥";
+    }
+
+    .bug-msg:nth-child(even)::before {
+      content: "⚡🐛";
+    }
+
+    /* custom scroll */
+    .messages-area::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .messages-area::-webkit-scrollbar-track {
+      background: #0f1322;
+      border-radius: 10px;
+    }
+
+    .messages-area::-webkit-scrollbar-thumb {
+      background: #ff9f4a;
+      border-radius: 10px;
+    }
+
+    /* footer owner section */
+    .footer-owner {
+      background: #05080fcc;
+      padding: 0.9rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1rem;
+      border-top: 1px solid #2f3a55;
+      color: #d6c294;
+      letter-spacing: 1px;
+    }
+
+    .footer-owner strong {
+      background: linear-gradient(145deg, #f5b042, #ffd966);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 1.05rem;
+    }
+
+    /* empty state / hint */
+    .empty-hint {
+      text-align: center;
+      color: #5b6a8c;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    /* animation keyframes */
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: translateX(-20px) scale(0.92);
+      }
+      80% {
+        transform: translateX(3px) scale(1.01);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
+
+    /* responsive */
+    @media (max-width: 500px) {
+      .content {
+        padding: 1.5rem;
+      }
+      .header h1 {
+        font-size: 1.8rem;
+      }
+      .bug-button {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="god-card">
+  <div class="header">
+    <h1>GOD OF SERVER</h1>
+  </div>
+
+  <div class="content">
+    <div class="input-group">
+      <label>📞 Enter Target Number</label>
+      <input type="text" id="phoneNumber" value="+94" placeholder="+94XXXXXXXXX">
+    </div>
+
+    <button class="bug-button" id="sendBugBtn">
+      🧨 SEND WHATSAPP BUG 🧨
+    </button>
+
+    <div class="bug-log">
+      <div class="log-title">
+        <span>💢 CRASH SIMULATION LOG 💢</span>
+        <span id="clearLogBtn">🗑️ CLEAR</span>
+      </div>
+      <div class="messages-area" id="messagesContainer">
+        <div class="empty-hint">✨ Click the button to unleash WhatsApp bug sequence ✨</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-owner">
+    👑 Owner: <strong>NIKIYA MOD</strong> 👑
+  </div>
+</div>
+
+<script>
+  // DOM elements
+  const sendBtn = document.getElementById('sendBugBtn');
+  const phoneInput = document.getElementById('phoneNumber');
+  const messagesContainer = document.getElementById('messagesContainer');
+  const clearBtn = document.getElementById('clearLogBtn');
+
+  // exact message list as required (case variations preserved)
+  const bugMessagesList = [
+    "WhatsApp bug",
+    "WhatsApp bug",
+    "WhatsApp bug",
+    "WhatsApp bug",
+    "WhatsApp bug",
+    "Whatsapp bug",
+    "Whatsapp bug",
+    "Whatsapp bug"
+  ];
+
+  // helper: create a single bug message element with animation
+  function createBugMessageElement(messageText) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'bug-msg';
+    // inner text includes the message string
+    msgDiv.appendChild(document.createTextNode(messageText));
+    // optional: extra span to keep style consistent
+    return msgDiv;
+  }
+
+  // display all bug messages sequentially (simulate incoming crash spam)
+  // we also add small staggered effect for realism but still all messages appear instantly as per requirement?
+  // The requirement says: "When the button is clicked, display a series of messages simulating WhatsApp crashes and bugs"
+  // we will display all 8 messages at once but with subtle staggered appearance to feel like bug flood!
+  // but to match exactly and be interactive, they appear in the log container. We'll also respect clearing previous ones.
+  function renderAllBugMessages(clearPrevious = true) {
+    if (clearPrevious) {
+      // clear container content
+      messagesContainer.innerHTML = '';
+    } else {
+      // if we want to append but original spec: each click shows new set of messages (bug spam)
+      // but typical behaviour: each click resets previous bugs & shows fresh sequence
+      // we'll do clear previous then add new for clean experience.
+      messagesContainer.innerHTML = '';
+    }
+
+    // now append each bug message from the exact list (order matters)
+    for (let i = 0; i < bugMessagesList.length; i++) {
+      const msgText = bugMessagesList[i];
+      const msgElement = createBugMessageElement(msgText);
+      messagesContainer.appendChild(msgElement);
+    }
+
+    // auto-scroll to bottom to see latest bugs
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // main action when clicking Send WhatsApp Bug
+  function triggerWhatsAppBug() {
+    // get the phone number value (just for simulation, but we use it for dramatic effect)
+    let targetNumber = phoneInput.value.trim();
+    if (targetNumber === "") {
+      targetNumber = "+94 (unknown)";
+    }
+    
+    // optional: give tiny haptic / console but not needed, just for immersive
+    console.log(`[GOD OF SERVER] targeting ${targetNumber} — deploying WhatsApp bug sequence`);
+    
+    // Display the series of messages as described (8 messages exact)
+    renderAllBugMessages(true);
+    
+    // Additional fun micro-interaction: subtle shake to button? just for fun
+    const btn = sendBtn;
+    btn.style.transform = 'scale(0.98)';
+    setTimeout(() => {
+      btn.style.transform = '';
+    }, 120);
+    
+    // Also we can simulate additional "crash effect" by temporary flashing the card border
+    const card = document.querySelector('.god-card');
+    card.style.transition = 'box-shadow 0.1s';
+    card.style.boxShadow = '0 0 0 2px #ff5e3a, 0 25px 40px black';
+    setTimeout(() => {
+      card.style.boxShadow = '';
+    }, 280);
+  }
+
+  // clear log manually (with empty state hint)
+  function clearLog() {
+    messagesContainer.innerHTML = '<div class="empty-hint">✨ Log cleared. Ready for next bug attack ✨</div>';
+  }
+
+  // event listeners
+  sendBtn.addEventListener('click', triggerWhatsAppBug);
+  clearBtn.addEventListener('click', clearLog);
+
+  // Bonus: if the user wants to have the same default number +94 can be edited but stays as default
+  // also add keypress for enter on input to trigger bug? not mandatory but improves UX
+  phoneInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      triggerWhatsAppBug();
+    }
+  });
+
+  // small initial setup: ensure that the default empty hint is present, but also we want to respect any starting state
+  // ensure container starts with empty hint without messages
+  // we do not pre-populate bug messages on load
+  // after page loads we set empty hint
+  // (but if someone clicks clear, it goes to empty hint, fine)
+  
+  // However, one more requirement: "When button is clicked, display a series of messages simulating WhatsApp crashes and bugs: [list]"
+  // The messages exactly as described: 5 "WhatsApp bug" then 3 "Whatsapp bug" (case variations)
+  // Ensure correctness: our bugMessagesList matches exactly:
+  // ["WhatsApp bug","WhatsApp bug","WhatsApp bug","WhatsApp bug","WhatsApp bug","Whatsapp bug","Whatsapp bug","Whatsapp bug"]
+  // double-check counts: 5 uppercase 'A' in WhatsApp? Actually "WhatsApp bug" (capital A) appears 5 times, and 3 times "Whatsapp bug" (lowercase a).
+  // Verified!
+  
+  // Additionally we can add a slight extra animation to bug messages, already included with keyframes
+  // Also because we need to show each message line exactly as listed, it's done.
+  
+  // additional fun: display a small status in console or toast? not needed, but we could add dynamic counter?
+  // I also respect that owner label appears at bottom: "Owner: NIKIYA MOD"
+  
+  // Also make sure default value of input field is "+94" — it is set in HTML value.
+  // But we can also enforce that it doesn't get empty string on clear
+  // prevent full empty if user deletes everything, but that's optional.
+  
+  // Let's add an extra micro-feature: if the user clicks send and the input is only "+94" or more, shows popup feeling.
+  // Also for better simulation we add timestamp? not needed but nice.
+  // Done.
+  
+  // additional robust: when sending new bugs, if there's already a huge list, we replace properly. Also we are using renderAllBugMessages.
+  // optional sound? not needed due to browser restrictions, but design works.
+  
+  // final step: ensure the container scroll shows latest messages (scroll to bottom)
+  // already done inside renderAllBugMessages
+  
+  // implement extra small status: I will also add a dynamic status effect on button label? not needed but okay.
+  
+  // Also owner name fixed, tool name in header.
+  // Edge cases: multiple clicks will cause fast re-render which is fine, it replaces the message list with fresh sequence
+  // It matches "display a series of messages" each click does fresh series.
+  
+  // Enhance: add subtle 'bug count' animation? not mandatory but feels good
+  // All clear.
+  
+  // Additional: The requirement says "simulating WhatsApp crashes and bugs" — we used flash effect and danger colors.
+  // Provide full responsiveness and modern glassmorphic look.
+  
+  // optional simulate loading while sending, but not needed.
+  
+  // some users might want to see the number used, but not mandatory.
+  // We're good.
+  
+  // ALSO: To fulfill the exact text of each bug message (same order and spelling)
+  // Let's double-check with the prompt list:
+  // "WhatsApp bug" (5 times) then "Whatsapp bug" (3 times) but final "Whatsapp bug" with lower a -> all good.
+  
+  // final detail: I need to be sure there are exactly 8 lines displayed.
+  // we can even display small footer counts but not needed.
+  
+  // Provide smooth UX on mobile.
+  
+  // small patch: In case clear button is used, then clicking send again displays full 8 bug messages again.
+  // excellent.
+  
+  // also i want to ensure that if someone clicks send multiple times quickly, it's okay.
+  // No performance issues.
+  
+  // final: In the messages-area we might have dynamic heights.
+  // done.
+  
+  // Optional: Additional "bug crash" effect: shake the input field on send? small extra but not needed
+  const shakeInput = () => {
+    const inputField = phoneInput;
+    inputField.style.transform = 'translateX(4px)';
+    setTimeout(() => { inputField.style.transform = ''; }, 80);
+    setTimeout(() => { inputField.style.transform = 'translateX(-2px)'; }, 160);
+    setTimeout(() => { inputField.style.transform = ''; }, 240);
+  };
+  // add subtle input shake only if number is empty? but add minor effect when sending bug:
+  const originalTrigger = triggerWhatsAppBug;
+  window.triggerWhatsAppBug = triggerWhatsAppBug; // just keep reference
+  // override to add extra animation on input
+  const enhancedTrigger = () => {
+    if (phoneInput.value.trim().length < 3) {
+      shakeInput();
+    }
+    originalTrigger();
+  };
+  // rebind event to enhanced but keep consistency, but I'll replace listener safely
+  // remove old listener and attach new
+  const newSendBtn = sendBtn.cloneNode(true);
+  sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
+  // reacquire new button reference
+  const finalSendBtn = document.getElementById('sendBugBtn');
+  const finalClearBtn = document.getElementById('clearLogBtn');
+  const finalMessagesContainer = document.getElementById('messagesContainer');
+  const finalPhoneInput = document.getElementById('phoneNumber');
+  
+  // reassign globals
+  const finalTrigger = () => {
+    let targetNum = finalPhoneInput.value.trim();
+    if (targetNum === "") {
+      finalPhoneInput.value = "+94";
+      targetNum = "+94";
+    }
+    // clear container and show fresh bug messages
+    finalMessagesContainer.innerHTML = '';
+    for (let i = 0; i < bugMessagesList.length; i++) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'bug-msg';
+      msgDiv.appendChild(document.createTextNode(bugMessagesList[i]));
+      finalMessagesContainer.appendChild(msgDiv);
+    }
+    finalMessagesContainer.scrollTop = finalMessagesContainer.scrollHeight;
+    // button & card flash effect
+    const btnEl = finalSendBtn;
+    btnEl.style.transform = 'scale(0.98)';
+    setTimeout(() => { if(btnEl) btnEl.style.transform = ''; }, 120);
+    const godCard = document.querySelector('.god-card');
+    if (godCard) {
+      godCard.style.transition = 'box-shadow 0.1s';
+      godCard.style.boxShadow = '0 0 0 2px #ff5e3a, 0 25px 40px black';
+      setTimeout(() => { if(godCard) godCard.style.boxShadow = ''; }, 280);
+    }
+    if (targetNum === "+94" || targetNum.length < 4) {
+      const inp = finalPhoneInput;
+      inp.style.transform = 'translateX(4px)';
+      setTimeout(() => { if(inp) inp.style.transform = ''; }, 80);
+      setTimeout(() => { if(inp) inp.style.transform = 'translateX(-2px)'; }, 160);
+      setTimeout(() => { if(inp) inp.style.transform = ''; }, 240);
+    }
+  };
+  
+  const finalClearAction = () => {
+    finalMessagesContainer.innerHTML = '<div class="empty-hint">✨ Log cleared. Ready for next bug attack ✨</div>';
+  };
+  
+  finalSendBtn.addEventListener('click', finalTrigger);
+  finalClearBtn.addEventListener('click', finalClearAction);
+  finalPhoneInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') finalTrigger();
+  });
+  
+  // make sure default empty state on load
+  finalMessagesContainer.innerHTML = '<div class="empty-hint">✨ Click the button to unleash WhatsApp bug sequence ✨</div>';
+  
+  // also adjust default if needed
+  if (finalPhoneInput.value === "") finalPhoneInput.value = "+94";
+  
+  // final owner and god of server label remain in footer & header
+  // perfect match to all requirements: the series of messages shown exactly as per spec.
+  // additional stability: Ensure that when button clicked we show 8 messages (5 capital 'WhatsApp bug' and 3 lowercase 'Whatsapp bug')
+  // test in finalTrigger: loop uses bugMessagesList that matches exactly.
+  // end of script.
+</script>
+</body>
+</html>
